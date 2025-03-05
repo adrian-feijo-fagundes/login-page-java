@@ -19,7 +19,7 @@ public class UserRepository {
         ArrayList<UserDTO> users = new ArrayList<>();
 
         // SQL para selecionar todos os registros
-        String sql = "SELECT * FROM usuarios";
+        String sql = "SELECT * FROM users";
 
         // Tentando executar a consulta SQL
         try (
@@ -38,28 +38,31 @@ public class UserRepository {
         }
         return users;
     }
-    public UserDTO getUser(String name) throws Exception{
+    public UserDTO getUser(String name) throws Exception {
         String sql = "SELECT * FROM users WHERE name = ?";
 
         UserDTO user = null;
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql);) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, name);
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery();
 
-            user = new UserDTO(
-                rs.getInt("id"),
-                rs.getString("name"),
-                rs.getString("hashedPassword"));
-
+            if (rs.next()) { // Verifica se há resultados antes de acessar os valores
+                user = new UserDTO(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("hashedPassword")
+                );
+            }
         } catch (Exception e) {
-            throw new Exception( "Erro ao obter usuário " + name + ": " + e.getMessage());
+            throw new Exception("Erro ao obter usuário " + name + ": " + e.getMessage());
         }
 
         return user;
     }
+
     public void createUser(String name, String hashedPassword) {
-        String sql = "INSERT INTO users (nome, hashedPassword) VALUES (?, ?)";
+        String sql = "INSERT INTO users (name, hashedPassword) VALUES (?, ?)";
 
         try ( PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, name);

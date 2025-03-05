@@ -22,4 +22,8 @@ public class UserDTO {
     public int getId() {
         return id;
     }
+
+    public String toString() {
+        return this.getId() + " " + this.getUsername() + " " + this.getHashedPassword();
+    }
 }
