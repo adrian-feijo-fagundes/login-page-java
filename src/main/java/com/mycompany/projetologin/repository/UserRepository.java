@@ -1,6 +1,6 @@
-package com.mycompany.projetologin;
+package com.mycompany.projetologin.repository;
 
-import org.mindrot.jbcrypt.BCrypt;
+import com.mycompany.projetologin.dto.UserDTO;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

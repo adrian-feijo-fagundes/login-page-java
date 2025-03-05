@@ -1,4 +1,4 @@
-package com.mycompany.projetologin;
+package com.mycompany.projetologin.dto;
 
 public class UserDTO {
     int id;

@@ -1,4 +1,4 @@
-package com.mycompany.projetologin;
+package com.mycompany.projetologin.config;
 
 import java.sql.Connection;
 import java.sql.Statement;

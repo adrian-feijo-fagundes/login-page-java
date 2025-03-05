@@ -1,5 +1,11 @@
 package com.mycompany.projetologin;
 
+import com.mycompany.projetologin.config.DatabaseConnection;
+import com.mycompany.projetologin.config.DatabaseTableInitializer;
+import com.mycompany.projetologin.dto.UserDTO;
+import com.mycompany.projetologin.repository.UserRepository;
+import com.mycompany.projetologin.service.AuthService;
+
 import java.sql.Connection;
 import java.util.ArrayList;
 

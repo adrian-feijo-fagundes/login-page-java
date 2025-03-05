@@ -1,4 +1,8 @@
-package com.mycompany.projetologin;
+package com.mycompany.projetologin.service;
+
+import com.mycompany.projetologin.util.PasswordUtils;
+import com.mycompany.projetologin.dto.UserDTO;
+import com.mycompany.projetologin.repository.UserRepository;
 
 public class AuthService {
     UserRepository userRepository;

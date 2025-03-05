@@ -1,4 +1,4 @@
-package com.mycompany.projetologin;
+package com.mycompany.projetologin.util;
 
 import org.mindrot.jbcrypt.BCrypt;
 
