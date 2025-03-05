@@ -12,6 +12,8 @@ import com.mycompany.projetologin.service.AuthService;
 import com.mycompany.projetologin.util.PasswordUtils;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.util.Objects;
 
@@ -21,12 +23,13 @@ import java.util.Objects;
  */
 public class MainPanel extends javax.swing.JFrame {
     private Connection conn;
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
+    private DatabaseConnection dbc;
     /**
 	 * Creates new form TelaLogin
 	 */
 	public MainPanel() {
-        DatabaseConnection dbc = new DatabaseConnection();
+        dbc = new DatabaseConnection();
 
         this.conn = dbc.connect();
         DatabaseTableInitializer.createUsers(this.conn);
@@ -52,8 +55,23 @@ public class MainPanel extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         passwordField = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int resposta = JOptionPane.showConfirmDialog(
+                        null,
+                        "Deseja realmente sair?",
+                        "Confirmação",
+                        JOptionPane.YES_NO_OPTION
+                );
 
+                if (resposta == JOptionPane.YES_OPTION) {
+                    dbc.disconnect(conn);
+                    System.exit(0);  // Finaliza o programa
+                }
+            }
+        });
         jPanel1.setBackground(new java.awt.Color(217, 217, 217));
 
         loginBtn.setText("Login");
@@ -156,6 +174,8 @@ public class MainPanel extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_registerBtnActionPerformed
+
+
 
 	/**
 	 * @param args the command line arguments
