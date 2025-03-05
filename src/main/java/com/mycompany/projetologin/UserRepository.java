@@ -53,6 +53,8 @@ public class UserRepository {
                         rs.getString("name"),
                         rs.getString("hashedPassword")
                 );
+            } else {
+                throw new Exception("Usuário não foi encontrado");
             }
         } catch (Exception e) {
             throw new Exception("Erro ao obter usuário " + name + ": " + e.getMessage());

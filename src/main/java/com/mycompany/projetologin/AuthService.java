@@ -11,9 +11,12 @@ public class AuthService {
 
         try {
             UserDTO user = this.userRepository.getUser(username);
+            if (user == null) {
+                throw new RuntimeException("Usu");
+            }
 
-            if (PasswordUtils.verifyPassword(password, user.getHashedPassword())) {
-                throw new Exception("Senha incorreta");
+            if (!PasswordUtils.verifyPassword(password, user.getHashedPassword())) {
+                throw new RuntimeException("Senha incorreta");
             }
         } catch (Exception e) {
             System.out.println("Erro ao realizar login: " + e.getMessage());

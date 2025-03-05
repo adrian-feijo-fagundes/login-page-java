@@ -9,7 +9,7 @@ public class DatabaseConnection {
         // Declara uma variável para armazenar a conexão
         Connection connection = null;
         // Define o caminho do banco de dados SQLite
-        String url = "jdbc:sqlite:usuariosNovo.db";
+        String url = "jdbc:sqlite:users.db";
 
         try {
             // Tenta estabelecer a conexão com o banco de dados usando a URL fornecida

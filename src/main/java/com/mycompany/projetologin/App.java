@@ -12,8 +12,8 @@ public class App {
 
         UserRepository userRepository = new UserRepository(conn);
 
-        userRepository.createUser("Adrian", PasswordUtils.hashPassword("123"));
-        userRepository.createUser("Bruno", PasswordUtils.hashPassword("1234"));
+        //userRepository.createUser("Adrian", PasswordUtils.hashPassword("123"));
+        //userRepository.createUser("Bruno", PasswordUtils.hashPassword("1234"));
 
         try {
             UserDTO user = userRepository.getUser("Adrian");
@@ -21,9 +21,17 @@ public class App {
             System.out.println(user.toString());
             System.out.println(users);
 
+            // Simulando login
+
+            AuthService authService = new AuthService(userRepository);
+            boolean result = authService.login("Adian", "123");
+            System.out.println(result);
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+
+
 
         dbc.disconnect(conn);
     }
