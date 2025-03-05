@@ -63,7 +63,7 @@ public class UserRepository {
         return user;
     }
 
-    public void createUser(String name, String hashedPassword) {
+    public boolean createUser(String name, String hashedPassword) throws Exception {
         String sql = "INSERT INTO users (name, hashedPassword) VALUES (?, ?)";
 
         try ( PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -74,8 +74,9 @@ public class UserRepository {
 
             System.out.println("Usuário Inserido com sucesso");
         } catch (Exception e) {
-            System.out.println("Erro ao inserir usuário" + e.getMessage());
+            throw new Exception("Erro ao inserir usuário" + e.getMessage());
         }
+        return true;
     }
     public void putUser() {}
     public void deleteUser() {}

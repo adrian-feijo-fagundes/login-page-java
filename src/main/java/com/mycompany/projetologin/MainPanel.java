@@ -2,19 +2,38 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.mycompany.projetologin.ui;
+package com.mycompany.projetologin;
+
+import com.mycompany.projetologin.config.DatabaseConnection;
+import com.mycompany.projetologin.config.DatabaseTableInitializer;
+import com.mycompany.projetologin.dto.UserDTO;
+import com.mycompany.projetologin.repository.UserRepository;
+import com.mycompany.projetologin.service.AuthService;
+import com.mycompany.projetologin.util.PasswordUtils;
+
+import javax.swing.*;
+import java.sql.Connection;
+import java.util.Objects;
 
 /**
  *
  * @author ADRIANFEIJOFAGUNDES
  */
 public class MainPanel extends javax.swing.JFrame {
-
-	/**
+    private Connection conn;
+	private UserRepository userRepository;
+    /**
 	 * Creates new form TelaLogin
 	 */
 	public MainPanel() {
-		initComponents();
+        DatabaseConnection dbc = new DatabaseConnection();
+
+        this.conn = dbc.connect();
+        DatabaseTableInitializer.createUsers(this.conn);
+        userRepository = new UserRepository(this.conn);
+
+        initComponents();
+
 	}
 
 	/**
@@ -28,10 +47,10 @@ public class MainPanel extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         loginBtn = new javax.swing.JButton();
         registerBtn = new javax.swing.JButton();
-        password = new javax.swing.JPasswordField();
-        username = new javax.swing.JTextField();
+        usernameField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        passwordField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -45,6 +64,11 @@ public class MainPanel extends javax.swing.JFrame {
         });
 
         registerBtn.setText("Registrar");
+        registerBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                registerBtnActionPerformed(evt);
+            }
+        });
 
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Usuário");
@@ -58,13 +82,13 @@ public class MainPanel extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(79, 79, 79)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(passwordField, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
                     .addComponent(jLabel2)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(registerBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
                         .addComponent(loginBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(password)
-                        .addComponent(username))
+                        .addComponent(usernameField))
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(91, Short.MAX_VALUE))
         );
@@ -74,11 +98,11 @@ public class MainPanel extends javax.swing.JFrame {
                 .addContainerGap(70, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(usernameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(loginBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -101,8 +125,37 @@ public class MainPanel extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-        // TODO add your handling code here:
+        try {
+            String password = passwordField.getText();
+            String username = usernameField.getText();
+            UserDTO user = userRepository.getUser(username);
+            AuthService authService = new AuthService(userRepository);
+
+            authService.login(username, password);
+            JOptionPane.showMessageDialog(null,"Login do usuário " + user.getUsername() + " foi realizado com sucesso!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_loginBtnActionPerformed
+
+    private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
+        String password = passwordField.getText();
+        String username = usernameField.getText();
+        if (Objects.equals(username, "")) {
+            JOptionPane.showMessageDialog(null, "O campo de usuário não foi preenchido", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (Objects.equals(password, "")) {
+            JOptionPane.showMessageDialog(null, "O campo de senha não foi preenchido", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        try {
+            userRepository.createUser(username, PasswordUtils.hashPassword(password));
+            JOptionPane.showMessageDialog(null,"Usuário Criado com sucesso.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_registerBtnActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -111,7 +164,7 @@ public class MainPanel extends javax.swing.JFrame {
 		/* Set the Nimbus look and feel */
 		//<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
 		/* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
 		 */
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -144,8 +197,8 @@ public class MainPanel extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton loginBtn;
-    private javax.swing.JPasswordField password;
+    private javax.swing.JTextField passwordField;
     private javax.swing.JButton registerBtn;
-    private javax.swing.JTextField username;
+    private javax.swing.JTextField usernameField;
     // End of variables declaration//GEN-END:variables
 }

@@ -7,7 +7,7 @@ public class DatabaseTableInitializer {
     public static void createUsers(Connection connection) {
         String sql = "CREATE TABLE IF NOT EXISTS users(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "name TEXT NOT NULL,"+
+                "name TEXT UNIQUE NOT NULL,"+
                 "hashedPassword TEXT NOT NULL)";
 
         try (Statement stmt = connection.createStatement()) {

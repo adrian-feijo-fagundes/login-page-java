@@ -11,22 +11,13 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    public Boolean login(String username, String password) {
-
-        try {
+    public void login(String username, String password) throws Exception {
             UserDTO user = this.userRepository.getUser(username);
             if (user == null) {
-                throw new RuntimeException("Usu");
+                throw new RuntimeException("Esse usuário não existe");
             }
-
             if (!PasswordUtils.verifyPassword(password, user.getHashedPassword())) {
                 throw new RuntimeException("Senha incorreta");
             }
-        } catch (Exception e) {
-            System.out.println("Erro ao realizar login: " + e.getMessage());
-            return false;
-        }
-
-        return true;
     }
 }
