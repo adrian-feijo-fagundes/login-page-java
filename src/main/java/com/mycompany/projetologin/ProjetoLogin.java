@@ -12,8 +12,6 @@ import com.mycompany.projetologin.service.AuthService;
 import com.mycompany.projetologin.util.PasswordUtils;
 
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.util.Objects;
 
@@ -21,14 +19,14 @@ import java.util.Objects;
  *
  * @author ADRIANFEIJOFAGUNDES
  */
-public class MainPanel extends javax.swing.JFrame {
-    private Connection conn;
-	private final UserRepository userRepository;
-    private DatabaseConnection dbc;
+public class ProjetoLogin extends javax.swing.JFrame {
+    private final Connection conn;
+    private final UserRepository userRepository;
+    private final DatabaseConnection dbc;
     /**
 	 * Creates new form TelaLogin
 	 */
-	public MainPanel() {
+	public ProjetoLogin() {
         dbc = new DatabaseConnection();
 
         this.conn = dbc.connect();
@@ -55,24 +53,19 @@ public class MainPanel extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         passwordField = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                int resposta = JOptionPane.showConfirmDialog(
-                        null,
-                        "Deseja realmente sair?",
-                        "Confirmação",
-                        JOptionPane.YES_NO_OPTION
-                );
-
-                if (resposta == JOptionPane.YES_OPTION) {
-                    dbc.disconnect(conn);
-                    System.exit(0);  // Finaliza o programa
-                }
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
             }
         });
+
         jPanel1.setBackground(new java.awt.Color(217, 217, 217));
+        jPanel1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jPanel1KeyPressed(evt);
+            }
+        });
 
         loginBtn.setText("Login");
         loginBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -85,6 +78,12 @@ public class MainPanel extends javax.swing.JFrame {
         registerBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 registerBtnActionPerformed(evt);
+            }
+        });
+
+        usernameField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usernameFieldActionPerformed(evt);
             }
         });
 
@@ -103,10 +102,9 @@ public class MainPanel extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(passwordField, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
                     .addComponent(jLabel2)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(registerBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
-                        .addComponent(loginBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(usernameField))
+                    .addComponent(registerBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                    .addComponent(loginBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(usernameField)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(91, Short.MAX_VALUE))
         );
@@ -151,7 +149,10 @@ public class MainPanel extends javax.swing.JFrame {
 
             authService.login(username, password);
             JOptionPane.showMessageDialog(null,"Login do usuário " + user.getUsername() + " foi realizado com sucesso!");
-        } catch (Exception e) {
+        
+	    new TelaAtualizarUsuario(user.getId(),username,password).setVisible(true);
+	    this.dispose();
+	} catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_loginBtnActionPerformed
@@ -175,6 +176,20 @@ public class MainPanel extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_registerBtnActionPerformed
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+	dbc.disconnect(this.conn);
+    }//GEN-LAST:event_formWindowClosing
+
+    private void usernameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameFieldActionPerformed
+        this.passwordField.requestFocusInWindow();
+    }//GEN-LAST:event_usernameFieldActionPerformed
+
+    private void jPanel1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPanel1KeyPressed
+        if (evt.getKeyCode() == evt.VK_ENTER){
+			loginBtnActionPerformed(null);
+	}
+    }//GEN-LAST:event_jPanel1KeyPressed
+
 
 
 	/**
@@ -194,20 +209,21 @@ public class MainPanel extends javax.swing.JFrame {
 				}
 			}
 		} catch (ClassNotFoundException ex) {
-			java.util.logging.Logger.getLogger(MainPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(ProjetoLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (InstantiationException ex) {
-			java.util.logging.Logger.getLogger(MainPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(ProjetoLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (IllegalAccessException ex) {
-			java.util.logging.Logger.getLogger(MainPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(ProjetoLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-			java.util.logging.Logger.getLogger(MainPanel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+			java.util.logging.Logger.getLogger(ProjetoLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		}
+		//</editor-fold>
 		//</editor-fold>
 
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				new MainPanel().setVisible(true);
+				new ProjetoLogin().setVisible(true);
 			}
 		});
 	}

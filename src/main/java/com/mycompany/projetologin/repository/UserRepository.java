@@ -1,6 +1,7 @@
 package com.mycompany.projetologin.repository;
 
 import com.mycompany.projetologin.dto.UserDTO;
+import com.mycompany.projetologin.util.PasswordUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -78,6 +79,49 @@ public class UserRepository {
         }
         return true;
     }
-    public void putUser() {}
-    public void deleteUser() {}
+    public void putUser(String uptUsername, String uptPassword, int id) throws Exception {
+	String sql = "UPDATE users  SET name = ?, hashedPassword = ? WHERE id = ?";
+            try (PreparedStatement pstmt = this.connection.prepareStatement(sql)) {
+                
+                // Substitui o primeiro parâmetro (?) com o novo nome fornecido.
+                pstmt.setString(1, uptUsername);
+                
+                // Substitui o segundo parâmetro (?) com o novo email fornecido.
+                pstmt.setString(2, PasswordUtils.hashPassword(uptPassword));
+                
+                // Substitui o terceiro parâmetro (?) com o ID do usuário para identificar qual usuário atualizar.
+                pstmt.setInt(3, id);
+                
+                // Executa o comando SQL e retorna o número de linhas afetadas pela operação.
+                int rowsUpdated = pstmt.executeUpdate();
+
+                // Verifica se pelo menos uma linha foi atualizada.
+                if (rowsUpdated > 0) {
+                    // Se a atualização foi bem-sucedida, imprime a mensagem de sucesso.
+                    System.out.println("Usuário atualizado com sucesso!");
+                } else {
+                    // Se nenhuma linha foi atualizada (significa que o ID fornecido não foi encontrado), imprime uma mensagem.
+                    System.out.println("Nenhum usuário encontrado com o ID fornecido.");
+                }
+            } catch (Exception e) {
+                // Caso ocorra algum erro durante a execução do PreparedStatement, 
+                // ele é capturado aqui.
+                // O erro é impresso com uma mensagem explicativa.
+                throw new Exception("Erro ao atualizar usuário: " + e.getMessage());
+            }
+        
+    }
+    public void deleteUser(int id) throws Exception {
+	String sql = "DELETE FROM users WHERE id = ?";
+			
+	try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+	
+		pstmt.setInt(1, id);
+		
+		int rowsDeleted = pstmt.executeUpdate();
+		
+	} catch(Exception e) {
+		throw new Exception("Erro ao deletar usuário: " + e.getMessage());
+	}
+    }
 }
